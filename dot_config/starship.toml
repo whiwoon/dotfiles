@@ -30,7 +30,7 @@ bright_white = "#DEE3E4"
 
 [os]
 disabled = false
-style = "bold cyan"
+style = "bold bright_cyan"
 format = "[$symbol]($style) "
 
 [os.symbols]
@@ -49,12 +49,12 @@ format = "[$user]($style)"
 
 [hostname]
 ssh_only = false
-style = "bold cyan"
+style = "bold bright_cyan"
 format = "[@$hostname]($style) "
 trim_at = "."
 
 [directory]
-style = "bold blue"
+style = "bold bright_blue"
 read_only_style = "red"
 truncation_length = 4
 truncate_to_repo = false
@@ -65,7 +65,7 @@ home_symbol = "~"
 
 [git_branch]
 symbol = " "
-style = "magenta"
+style = "bright_magenta"
 format = "[$symbol$branch]($style) "
 
 [git_status]
