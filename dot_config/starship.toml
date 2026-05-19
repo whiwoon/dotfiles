@@ -1,6 +1,10 @@
-# Managed by chezmoi. Dimidium-inspired minimal Starship prompt.
+# Managed by chezmoi. Dimidium-inspired Starship prompt for wing.
+# Goals: calm dark-terminal palette, obvious host/context, useful git state,
+# and a compact two-line input area that stays readable over SSH/RDP.
 
-format = "$directory$git_branch$git_status$cmd_duration$line_break$character"
+format = """
+$os$username$hostname$directory$git_branch$git_status$cmd_duration$line_break$character"""
+right_format = "$status$time"
 add_newline = true
 palette = "dimidium"
 
@@ -24,11 +28,40 @@ bright_magenta = "#ED6FE9"
 bright_cyan = "#32E0FB"
 bright_white = "#DEE3E4"
 
+[os]
+disabled = false
+style = "bold cyan"
+format = "[$symbol]($style) "
+
+[os.symbols]
+Debian = ""
+Raspbian = ""
+Ubuntu = ""
+Linux = ""
+Macos = ""
+Windows = ""
+
+[username]
+show_always = false
+style_user = "bright_black"
+style_root = "bold red"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold cyan"
+format = "[@$hostname]($style) "
+trim_at = "."
+
 [directory]
 style = "bold blue"
+read_only_style = "red"
 truncation_length = 4
 truncate_to_repo = false
+fish_style_pwd_dir_length = 1
 read_only = " 󰌾"
+format = "[$path]($style)[$read_only]($read_only_style) "
+home_symbol = "~"
 
 [git_branch]
 symbol = " "
@@ -38,11 +71,34 @@ format = "[$symbol$branch]($style) "
 [git_status]
 style = "yellow"
 format = "([$all_status$ahead_behind]($style) )"
+conflicted = "=${count}"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "*${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
 
 [cmd_duration]
 min_time = 1000
 style = "bright_black"
-format = "[$duration]($style) "
+format = "took [$duration]($style) "
+
+[status]
+disabled = false
+style = "red"
+symbol = "✗"
+success_symbol = ""
+format = "[$symbol$status]($style) "
+
+[time]
+disabled = false
+style = "bright_black"
+format = "[$time]($style)"
+time_format = "%H:%M"
 
 [character]
 success_symbol = "[❯](green)"
