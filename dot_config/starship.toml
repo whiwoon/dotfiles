@@ -9,28 +9,30 @@ add_newline = true
 palette = "dimidium"
 
 [palettes.dimidium]
+# Muted Dimidium-derived prompt accents for a clean, heavier look.
+# Keep the dark background/foreground, but avoid bright ANSI colors in the prompt.
 fg = "#BAB7B6"
 bg = "#141414"
 black = "#000000"
-red = "#CF494C"
-green = "#60B442"
-yellow = "#DB9C11"
-blue = "#0575D8"
-magenta = "#AF5ED2"
-cyan = "#1DB6BB"
+red = "#B65A5D"
+green = "#78996A"
+yellow = "#A9823B"
+blue = "#5E7698"
+magenta = "#806A86"
+cyan = "#63888A"
 white = "#BAB7B6"
-bright_black = "#817E7E"
-bright_red = "#FF643B"
-bright_green = "#37E57B"
-bright_yellow = "#FCCD1A"
-bright_blue = "#688DFD"
-bright_magenta = "#ED6FE9"
-bright_cyan = "#32E0FB"
-bright_white = "#DEE3E4"
+bright_black = "#706C6C"
+bright_red = "#CF7A65"
+bright_green = "#86AD8B"
+bright_yellow = "#B99B55"
+bright_blue = "#7187A8"
+bright_magenta = "#927891"
+bright_cyan = "#789799"
+bright_white = "#D3D0CE"
 
 [os]
 disabled = false
-style = "bold bright_cyan"
+style = "bold cyan"
 format = "[$symbol]($style) "
 
 [os.symbols]
@@ -49,12 +51,12 @@ format = "[$user]($style)"
 
 [hostname]
 ssh_only = false
-style = "bold bright_cyan"
+style = "bold cyan"
 format = "[@$hostname]($style) "
 trim_at = "."
 
 [directory]
-style = "bold bright_blue"
+style = "bold blue"
 read_only_style = "red"
 truncation_length = 4
 truncate_to_repo = false
@@ -65,7 +67,7 @@ home_symbol = "~"
 
 [git_branch]
 symbol = " "
-style = "bright_magenta"
+style = "magenta"
 format = "[$symbol$branch]($style) "
 
 [git_status]
