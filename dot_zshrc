@@ -18,14 +18,9 @@ setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 
-# zsh was installed user-locally on wing by extracting Debian packages.
-# Add its function/module trees before compinit; harmless on systems without these paths.
-if [[ -d "$HOME/.local/opt/zsh-deb/usr/share/zsh/functions" ]]; then
-  fpath=("$HOME/.local/opt/zsh-deb/usr/share/zsh/functions" "$HOME/.local/opt/zsh-deb/usr/share/zsh/functions"/*(/) $fpath)
-fi
-if [[ -d "$HOME/.local/opt/zsh-deb/usr/lib/aarch64-linux-gnu/zsh/5.9" ]]; then
-  module_path=("$HOME/.local/opt/zsh-deb/usr/lib/aarch64-linux-gnu/zsh/5.9" $module_path)
-fi
+# System zsh is installed on wing. Do not prepend the old user-local zsh
+# extraction paths here; keeping the distro function/module trees first avoids
+# mixing packaged and manually extracted zsh components.
 
 # Completion
 autoload -Uz compinit
