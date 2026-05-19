@@ -1,0 +1,5 @@
+# Minimal first-pass plugin set for cross-platform zsh.
+# Keep this small until wing feels right.
+zsh-users/zsh-completions
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-syntax-highlighting

@@ -1,0 +1,63 @@
+# Managed by chezmoi. Edit with: chezmoi edit ~/.zshrc
+
+# Keep user-local binaries first. This also preserves the previous wing ~/.zshrc
+# behavior, which sourced ~/.local/bin/env when present.
+if [[ -f "$HOME/.local/bin/env" ]]; then
+  source "$HOME/.local/bin/env"
+fi
+path=("$HOME/.local/bin" $path)
+export PATH
+
+# History
+HISTFILE="${ZDOTDIR:-$HOME}/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+
+# zsh was installed user-locally on wing by extracting Debian packages.
+# Add its function/module trees before compinit; harmless on systems without these paths.
+if [[ -d "$HOME/.local/opt/zsh-deb/usr/share/zsh/functions" ]]; then
+  fpath=("$HOME/.local/opt/zsh-deb/usr/share/zsh/functions" "$HOME/.local/opt/zsh-deb/usr/share/zsh/functions"/*(/) $fpath)
+fi
+if [[ -d "$HOME/.local/opt/zsh-deb/usr/lib/aarch64-linux-gnu/zsh/5.9" ]]; then
+  module_path=("$HOME/.local/opt/zsh-deb/usr/lib/aarch64-linux-gnu/zsh/5.9" $module_path)
+fi
+
+# Completion
+autoload -Uz compinit
+if [[ -n "${XDG_CACHE_HOME:-}" ]]; then
+  zcompdump="$XDG_CACHE_HOME/zsh/zcompdump"
+else
+  zcompdump="$HOME/.cache/zsh/zcompdump"
+fi
+mkdir -p "${zcompdump:h}"
+compinit -d "$zcompdump"
+
+# Sensible shell behavior
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt INTERACTIVE_COMMENTS
+setopt NO_BEEP
+
+# Antidote plugin manager
+ANTIDOTE_HOME="${ANTIDOTE_HOME:-$HOME/.local/share/antidote}"
+ZSH_PLUGINS="${ZSH_PLUGINS:-$HOME/.config/antidote/zsh_plugins.txt}"
+if [[ -r "$ANTIDOTE_HOME/antidote.zsh" && -r "$ZSH_PLUGINS" ]]; then
+  source "$ANTIDOTE_HOME/antidote.zsh"
+  antidote load "$ZSH_PLUGINS"
+fi
+
+# Starship prompt
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
+
+# Local, non-versioned machine overrides.
+if [[ -r "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
+fi

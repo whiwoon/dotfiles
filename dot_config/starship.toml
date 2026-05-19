@@ -1,0 +1,50 @@
+# Managed by chezmoi. Dimidium-inspired minimal Starship prompt.
+
+format = "$directory$git_branch$git_status$cmd_duration$line_break$character"
+add_newline = true
+palette = "dimidium"
+
+[palettes.dimidium]
+fg = "#BAB7B6"
+bg = "#141414"
+black = "#000000"
+red = "#CF494C"
+green = "#60B442"
+yellow = "#DB9C11"
+blue = "#0575D8"
+magenta = "#AF5ED2"
+cyan = "#1DB6BB"
+white = "#BAB7B6"
+bright_black = "#817E7E"
+bright_red = "#FF643B"
+bright_green = "#37E57B"
+bright_yellow = "#FCCD1A"
+bright_blue = "#688DFD"
+bright_magenta = "#ED6FE9"
+bright_cyan = "#32E0FB"
+bright_white = "#DEE3E4"
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+truncate_to_repo = false
+read_only = " 󰌾"
+
+[git_branch]
+symbol = " "
+style = "magenta"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "yellow"
+format = "([$all_status$ahead_behind]($style) )"
+
+[cmd_duration]
+min_time = 1000
+style = "bright_black"
+format = "[$duration]($style) "
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](blue)"

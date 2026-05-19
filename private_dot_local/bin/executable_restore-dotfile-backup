@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+backup_parent="${DOTFILE_BACKUP_DIR:-$HOME/.dotfile-backups}"
+dry_run=0
+
+usage() {
+  cat <<'USAGE'
+Usage: restore-dotfile-backup [--dry-run] [BACKUP_DIR]
+
+Restore files from a timestamped dotfile backup directory.
+
+If BACKUP_DIR is omitted, the script lists backups under:
+  $DOTFILE_BACKUP_DIR, or ~/.dotfile-backups by default
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run|-n) dry_run=1; shift ;;
+    --help|-h) usage; exit 0 ;;
+    --) shift; break ;;
+    -*) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+
+backup_dir="${1:-}"
+
+choose_backup() {
+  if [ ! -d "$backup_parent" ]; then
+    echo "No backup directory found: $backup_parent" >&2
+    exit 1
+  fi
+
+  mapfile -t backups < <(find "$backup_parent" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -rn | cut -d' ' -f2-)
+  if [ "${#backups[@]}" -eq 0 ]; then
+    echo "No backups found under: $backup_parent" >&2
+    exit 1
+  fi
+
+  echo "Available dotfile backups:"
+  echo
+  local i
+  for i in "${!backups[@]}"; do
+    local dir name count mtime
+    dir="${backups[$i]}"
+    name="$(basename "$dir")"
+    count="$(find "$dir" -mindepth 1 \( -type f -o -type l \) | wc -l | tr -d ' ')"
+    mtime="$(date -r "$dir" '+%Y-%m-%d %H:%M:%S %z')"
+    printf '  %2d) %s  (%s items, %s)\n' "$((i + 1))" "$name" "$count" "$mtime"
+  done
+  echo
+
+  while true; do
+    read -r -p "Select backup to restore [1-${#backups[@]}] or q to quit: " choice
+    case "$choice" in
+      q|Q|quit|QUIT) echo "Cancelled."; exit 0 ;;
+      ''|*[!0-9]*) echo "Please enter a number or q." ;;
+      *)
+        if [ "$choice" -ge 1 ] && [ "$choice" -le "${#backups[@]}" ]; then
+          backup_dir="${backups[$((choice - 1))]}"
+          return
+        fi
+        echo "Out of range."
+        ;;
+    esac
+  done
+}
+
+if [ -z "$backup_dir" ]; then
+  choose_backup
+fi
+
+if [ ! -d "$backup_dir" ]; then
+  echo "Backup directory does not exist: $backup_dir" >&2
+  exit 1
+fi
+
+backup_dir="$(cd "$backup_dir" && pwd -P)"
+backup_parent_real="$(mkdir -p "$backup_parent" && cd "$backup_parent" && pwd -P)"
+case "$backup_dir" in
+  "$backup_parent_real"/*) ;;
+  *)
+    echo "Refusing to restore from unexpected location: $backup_dir" >&2
+    echo "Expected a directory under: $backup_parent_real" >&2
+    exit 1
+    ;;
+esac
+
+mapfile -t entries < <(cd "$backup_dir" && find . -mindepth 1 \( -type f -o -type l -o -type d \) -print | sort)
+if [ "${#entries[@]}" -eq 0 ]; then
+  echo "Backup is empty: $backup_dir" >&2
+  exit 1
+fi
+
+echo
+printf 'Selected backup: %s\n' "$backup_dir"
+if [ "$dry_run" -eq 1 ]; then
+  echo "Mode: dry-run; nothing will be changed."
+else
+  echo "Mode: restore; files will be copied into $HOME."
+fi
+echo
+
+echo "Items to restore:"
+for entry in "${entries[@]}"; do
+  rel="${entry#./}"
+  printf '  ~/%s\n' "$rel"
+done
+echo
+
+if [ "$dry_run" -eq 1 ]; then
+  exit 0
+fi
+
+read -r -p "Restore these items into $HOME? Type 'restore' to continue: " confirm
+if [ "$confirm" != "restore" ]; then
+  echo "Cancelled."
+  exit 0
+fi
+
+while IFS= read -r dir; do
+  rel="${dir#./}"
+  mkdir -p "$HOME/$rel"
+done < <(cd "$backup_dir" && find . -mindepth 1 -type d -print | sort)
+
+while IFS= read -r item; do
+  rel="${item#./}"
+  src="$backup_dir/$rel"
+  dest="$HOME/$rel"
+  mkdir -p "$(dirname "$dest")"
+  rm -rf "$dest"
+  cp -a "$src" "$dest"
+  printf 'Restored: ~/%s\n' "$rel"
+done < <(cd "$backup_dir" && find . -mindepth 1 \( -type f -o -type l \) -print | sort)
+
+echo
+echo "Restore complete."
