@@ -50,7 +50,7 @@ format = "[$user]($style)"
 
 [hostname]
 ssh_only = false
-style = "bold cyan"
+style = "bold green"
 format = "[@$hostname]($style) "
 trim_at = "."
 
