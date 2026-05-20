@@ -31,7 +31,7 @@ bright_white = "#DEE3E4"
 
 [os]
 disabled = false
-style = "bold cyan"
+style = "bold green"
 format = "[$symbol]($style) "
 
 [os.symbols]
