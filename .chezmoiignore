@@ -1,11 +1,12 @@
 {{- if eq .chezmoi.os "windows" }}
 # Unix-like shell files and helper scripts. Windows native uses PowerShell, not zsh.
-.chezmoiscripts/
-dot_zshenv
-dot_zshrc
-dot_config/antidote/
-dot_termux/
-private_dot_local/bin/
+.chezmoiscripts/**
+.chezmoiscripts/00-backup-before-apply.sh
+.zshenv
+.zshrc
+.config/antidote/**
+.termux/**
+.local/bin/**
 {{- else }}
 # Windows PowerShell profile; only apply on Windows hosts.
 Documents/PowerShell/
