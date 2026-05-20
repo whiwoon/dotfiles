@@ -77,12 +77,27 @@ if command -v fzf >/dev/null 2>&1; then
 fi
 
 # Antidote plugin manager
-ANTIDOTE_HOME="${ANTIDOTE_HOME:-$HOME/.local/share/antidote}"
 ZSH_PLUGINS="${ZSH_PLUGINS:-$HOME/.config/antidote/zsh_plugins.txt}"
-if [[ -r "$ANTIDOTE_HOME/antidote.zsh" && -r "$ZSH_PLUGINS" ]]; then
-  source "$ANTIDOTE_HOME/antidote.zsh"
-  antidote load "$ZSH_PLUGINS"
+_antidote_candidates=(
+  "${ANTIDOTE_HOME:-$HOME/.local/share/antidote}"
+  "${HOMEBREW_PREFIX:-}/opt/antidote/share/antidote"
+  "${HOMEBREW_PREFIX:-}/share/antidote"
+  /opt/homebrew/opt/antidote/share/antidote
+  /opt/homebrew/share/antidote
+  /usr/local/opt/antidote/share/antidote
+  /usr/local/share/antidote
+)
+if [[ -r "$ZSH_PLUGINS" ]]; then
+  for _antidote_home in "${_antidote_candidates[@]}"; do
+    if [[ -r "$_antidote_home/antidote.zsh" ]]; then
+      ANTIDOTE_HOME="$_antidote_home"
+      source "$ANTIDOTE_HOME/antidote.zsh"
+      antidote load "$ZSH_PLUGINS"
+      break
+    fi
+  done
 fi
+unset _antidote_home _antidote_candidates
 
 # Search history by the text already typed at the prompt. This is broader than
 # prefix-only search: typing `co` can find `docker compose ...` as well as
