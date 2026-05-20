@@ -47,8 +47,21 @@ config.font = wezterm.font_with_fallback({
 config.font_size = 12.0
 config.line_height = 1.05
 
-config.window_background_opacity = 1.0
-config.window_padding = { left = 8, right = 8, top = 6, bottom = 6 }
+-- Window appearance. Keep the same general feel across platforms; on Windows,
+-- enable the native Acrylic backdrop in addition to WezTerm opacity.
+config.window_background_opacity = 0.95
+config.window_padding = { left = 10, right = 10, top = 10, bottom = 10 }
+if wezterm.target_triple and wezterm.target_triple:find('windows') then
+  config.win32_system_backdrop = 'Acrylic'
+elseif wezterm.target_triple and wezterm.target_triple:find('apple') then
+  config.macos_window_background_blur = 20
+end
+
+-- Korean/IME input. This is especially important on Windows, but leaving it on
+-- globally keeps Hangul composition behavior consistent where IME is available.
+config.use_ime = true
+config.ime_preedit_rendering = 'System'
+
 config.audible_bell = 'Disabled'
 config.check_for_updates = false
 config.use_fancy_tab_bar = false
