@@ -10,4 +10,6 @@
 {{- else }}
 # Windows PowerShell profile; only apply on Windows hosts.
 Documents/PowerShell/
+# Do not remove legacy Windows WezTerm config files on Unix-like hosts.
+.wezterm.lua
 {{- end }}
