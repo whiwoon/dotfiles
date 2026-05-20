@@ -84,6 +84,17 @@ if [[ -r "$ANTIDOTE_HOME/antidote.zsh" && -r "$ZSH_PLUGINS" ]]; then
   antidote load "$ZSH_PLUGINS"
 fi
 
+# Search history by the text already typed at the prompt. This is broader than
+# prefix-only search: typing `co` can find `docker compose ...` as well as
+# `git commit ...`. Bind both terminfo and common ANSI arrow-key sequences for
+# portability across terminals.
+if (( $+functions[history-substring-search-up] && $+functions[history-substring-search-down] )); then
+  [[ -n "${terminfo[kcuu1]:-}" ]] && bindkey "${terminfo[kcuu1]}" history-substring-search-up
+  [[ -n "${terminfo[kcud1]:-}" ]] && bindkey "${terminfo[kcud1]}" history-substring-search-down
+  bindkey '^[[A' history-substring-search-up
+  bindkey '^[[B' history-substring-search-down
+fi
+
 # Starship prompt
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
