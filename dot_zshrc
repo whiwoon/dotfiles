@@ -39,6 +39,25 @@ setopt PUSHD_IGNORE_DUPS
 setopt INTERACTIVE_COMMENTS
 setopt NO_BEEP
 
+# Directory listing aliases. Keep plain `ls` close to GNU ls semantics, and use
+# eza for human-facing convenience aliases when it is installed on the host.
+if command -v dircolors >/dev/null 2>&1; then
+  eval "$(dircolors -b)"
+fi
+if ls --color=auto -d . >/dev/null 2>&1; then
+  alias ls='ls --color=auto'
+fi
+if command -v eza >/dev/null 2>&1; then
+  alias ll='eza -la --icons=auto --git --group-directories-first'
+  alias la='eza -a --icons=auto --group-directories-first'
+  alias l='eza --icons=auto --group-directories-first'
+  alias tree='eza --tree --icons=auto --group-directories-first'
+else
+  alias ll='ls -alF --color=auto'
+  alias la='ls -A --color=auto'
+  alias l='ls -CF --color=auto'
+fi
+
 # fzf integration. The fzf binary is installed by the host package manager;
 # chezmoi only manages shell behavior and keeps it conditional for portability.
 if command -v fzf >/dev/null 2>&1; then
